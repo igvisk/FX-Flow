@@ -88,7 +88,7 @@ Creating a fresh environment:
 ```powershell
 py -3.13 -m venv .venv
 .\.venv\Scripts\python.exe -m pip install --upgrade pip
-.\.venv\Scripts\python.exe -m pip install flet==0.84.0 flet-cli==0.84.0 flet-desktop==0.84.0
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
 .\.venv\Scripts\python.exe .\fx_app.py
 ```
 

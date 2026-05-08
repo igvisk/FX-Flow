@@ -1,0 +1,68 @@
+FX-Flow APK build notes
+=======================
+
+Verified in this repo
+- App entrypoint for packaging: fx_app.py
+- Flet version in venv: 0.84.0
+- Flutter reported by Flet CLI: 3.41.4
+- Android package / applicationId: com.igvisk.fxflow
+
+Why builds often need to run outside the sandbox
+- Flet/Flutter/Gradle use Android SDK, Gradle caches and temp files outside the repo.
+- The build can take several minutes even when nothing is wrong.
+- Dependency resolution may also need network access.
+
+Recommended command
+1. Open PowerShell in the repo root:
+   C:\py\CODEX\FX-Flow
+
+2. Run:
+   $env:PYTHONUTF8='1'
+   $env:PYTHONIOENCODING='utf-8'
+   .\fxflow-venv\Scripts\flet.exe build apk . --yes --no-rich-output --skip-flutter-doctor --module-name fx_app --project fxflow --product "FX-Flow" --org com.igvisk --build-version 1.4 --build-number 5 --exclude build .codex-tmp fxflow-venv .fx-flow-data test-temp tests __pycache__ .vscode images
+
+Notes about the command
+- --module-name fx_app targets the current consolidated entrypoint directly.
+- --project fxflow keeps the generated Android identifiers aligned with the existing package name.
+- --exclude keeps local build caches, virtual environments, screenshots, and Codex working folders out of the package.
+- Add --verbose if you need detailed logs.
+
+Expected output
+- Main APK copied by Flet:
+  build\apk\fxflow.apk
+- SHA1 file copied by Flet:
+  build\apk\fxflow.apk.sha1
+- Flutter intermediate APK:
+  build\flutter\build\app\outputs\flutter-apk\app-release.apk
+
+Quick verification after build
+- Show file info:
+  Get-Item .\build\apk\fxflow.apk | Select-Object FullName,Length,LastWriteTime
+
+- Optional SHA256:
+  Get-FileHash .\build\apk\fxflow.apk -Algorithm SHA256
+
+- Optional install to Android device:
+  & "$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe" install -r ".\build\apk\fxflow.apk"
+
+Important project-specific notes
+- The app icons are in assets\.
+- Current exchange-rate provider in code: https://free.ratesdb.com/v1/rates
+- The app UI presents the rate source as European Central Bank and now also shows the API provider in rate details.
+
+Signing note
+- The generated Android Gradle project currently signs release builds with the debug signing config.
+- This is fine for local testing.
+- For Play Store / distribution, replace debug signing with a real keystore and pass the Android signing options to flet build.
+
+If build fails
+- First try the same command outside Codex/sandbox in a normal PowerShell window.
+- Confirm Android SDK and platform-tools are installed.
+- Confirm Java 17 is available for the Android toolchain.
+- If needed, rerun with:
+  .\fxflow-venv\Scripts\flet.exe build apk . --yes --no-rich-output --skip-flutter-doctor --verbose --module-name fx_app --project fxflow --product "FX-Flow" --org com.igvisk --build-version 1.4 --build-number 5 --exclude build .codex-tmp fxflow-venv .fx-flow-data test-temp tests __pycache__ .vscode images
+
+If we later upgrade Flet
+- Re-check the build command with:
+  .\fxflow-venv\Scripts\flet.exe build apk --help
+- Re-test packaging because CLI flags and generated Android bootstrap can change between Flet versions.

@@ -1,0 +1,29 @@
+# Keep this repository as an explicit upload allowlist.
+*
+
+!.gitignore
+!README.md
+!APK_BUILD_NOTES.txt
+!requirements.txt
+
+!fx_app.py
+!fx_core.py
+
+!assets/
+!assets/**
+
+!images/
+!images/**
+
+!locales/
+!locales/**
+
+# Local/runtime/build data stays out of GitHub.
+Releases/
+fxflow-venv/
+.venv/
+.fx-flow-data/
+__pycache__/
+*.py[cod]
+build/
+.vscode/
