@@ -1,6 +1,6 @@
 # FX-Flow
 
-FX-Flow is a compact Flet currency converter built for quick everyday conversions, favorite-currency workflows, and graceful behavior when fresh network data is unavailable. The active app version in the codebase is `1.4`.
+FX-Flow is a compact Flet currency converter built for quick everyday conversions, favorite-currency workflows, and graceful behavior when fresh network data is unavailable. The active app version in the codebase is `1.4.2`.
 
 The current Python entrypoint is `fx_app.py`. Shared conversion, rate, cache, preference, and localization logic lives in `fx_core.py`.
 
@@ -88,7 +88,7 @@ Creating a fresh environment:
 ```powershell
 py -3.13 -m venv .venv
 .\.venv\Scripts\python.exe -m pip install --upgrade pip
-.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe -m pip install flet==0.84.0 flet-cli==0.84.0 flet-desktop==0.84.0
 .\.venv\Scripts\python.exe .\fx_app.py
 ```
 
@@ -101,8 +101,8 @@ Android packaging is documented in `APK_BUILD_NOTES.txt`. The current notes targ
 - module name: `fx_app`
 - project name: `fxflow`
 - package / application ID: `com.igvisk.fxflow`
-- build version: `1.4`
-- build number: `5`
+- build version: `1.4.2`
+- build number: `6`
 
 Expected APK output after a successful build:
 

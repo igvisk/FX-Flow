@@ -10,7 +10,7 @@ from urllib.parse import urlencode, urlparse
 from urllib.request import Request, urlopen
 
 APP_NAME = "FX-Flow"
-APP_VERSION = "1.4"
+APP_VERSION = "1.4.2"
 AUTHOR = "Igor Vitovský"
 GITHUB = "github.com/igvisk"
 

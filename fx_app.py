@@ -201,9 +201,24 @@ class FXFlowApp:
         converter_options = [
             self._currency_code_option(code) for code in self._converter_currencies()
         ]
+        amount_value = self._grouped_amount_value(self.preferences.last_amount)
+        self.clear_amount_button = ft.IconButton(
+            icon=ft.Icons.CLOSE_ROUNDED,
+            icon_color=MUTED,
+            icon_size=18,
+            tooltip=self.t("converter.clear_amount"),
+            width=36,
+            height=36,
+            style=ft.ButtonStyle(
+                shape=ft.RoundedRectangleBorder(radius=999),
+                padding=ft.Padding.all(4),
+            ),
+            visible=bool(amount_value.strip()),
+            on_click=self._on_clear_amount,
+        )
         self.amount_input = ft.TextField(
             label=self.t("converter.amount"),
-            value=self._grouped_amount_value(self.preferences.last_amount),
+            value=amount_value,
             hint_text=self.t("converter.amount_hint"),
             keyboard_type=ft.KeyboardType.NUMBER,
             border_radius=16,
@@ -211,6 +226,7 @@ class FXFlowApp:
             fill_color=SURFACE_ALT,
             text_style=ft.TextStyle(size=18, weight=ft.FontWeight.W_600),
             content_padding=ft.Padding.symmetric(horizontal=18, vertical=18),
+            suffix=self.clear_amount_button,
             on_change=self._on_amount_change,
             on_submit=self._on_calculate,
             on_blur=self._on_amount_blur,
@@ -883,7 +899,10 @@ class FXFlowApp:
         formatted_value = self._grouped_amount_value(raw_value)
         self.preferences.last_amount = formatted_value
         self._save_preferences()
+        clear_button_changed = self._update_clear_amount_button()
         if formatted_value == raw_value:
+            if clear_button_changed:
+                self.clear_amount_button.update()
             return
         caret = self._mapped_amount_caret(raw_value, formatted_value)
         self._formatting_amount_input = True
@@ -894,6 +913,15 @@ class FXFlowApp:
             self.amount_input.update()
         finally:
             self._formatting_amount_input = False
+
+    def _update_clear_amount_button(self) -> bool:
+        if not hasattr(self, "clear_amount_button"):
+            return False
+        is_visible = bool((self.amount_input.value or "").strip())
+        if self.clear_amount_button.visible == is_visible:
+            return False
+        self.clear_amount_button.visible = is_visible
+        return True
 
     def _mapped_amount_caret(self, raw_value: str, formatted_value: str) -> int | None:
         selection = self.amount_input.selection
@@ -1021,6 +1049,13 @@ class FXFlowApp:
 
     def _on_amount_blur(self, _: ft.ControlEvent) -> None:
         self._format_amount_input()
+        self._recalculate()
+        self.page.update()
+
+    def _on_clear_amount(self, _: ft.ControlEvent) -> None:
+        self.amount_input.value = ""
+        self.preferences.last_amount = ""
+        self._update_clear_amount_button()
         self._recalculate()
         self.page.update()
 
